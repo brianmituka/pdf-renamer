@@ -16,10 +16,10 @@ if [ $count = 0 ]; then
     echo "Pdfs found in the directory proceeding to rename"
 fi
 
-##FINSI
+## FIX for files with spaces in the titles 
 for i in *.pdf
 do 
- o=$(pdfgrep '' devopsfordevelopers.pdf | head -n 1)
+ o=$(pdfgrep '' $i | head -n 1 | tr -s " ")
  echo $o
  mv -v "$i" "${o#?}.pdf"
 done
