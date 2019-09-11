@@ -17,11 +17,30 @@ if [ $count = 0 ]; then
 fi
 
 ## FIX for files with spaces in the titles
-# counter=1 
-for i in *.pdf
-do 
- firstline=$(pdfgrep '' $i | head -n 1 | tr -s " ")
- echo $firstline
- mv -v "$i" "${firstline#?}.pdf"
-done
+#Find all the pdfs in a directory
+#fetch the first line from every pdf, 
+# remove any spaces and join the whole word and use it to rename the file
+# if the first line is empty, move to the next line until you find one 
+# with text that you can use to rename the file.
+# The filenames should'nt have any spaces.
+# tr -s " " |
+ rename_pdf_files(){
+  for i in *.pdf
+  do
+    initial_position=1
+    firstline=$(pdfgrep '' $i | head -n $initial_position | awk '{ gsub (" ", "", $0); print}')
+    if [ "$firstline" = "" ]; then
+      initial_position=$((initial_position+1))
+      echo "Skipped $initial_position lines"
+      firstline=$(pdfgrep '' $i | head -n $initial_position | awk '{ gsub (" ", "", $0); print}')
+      echo "first line set to:: $firstline"
+      mv -v "$i" "${firstline#?}.pdf"
+    else 
+      mv -v "$i" "${firstline#?}.pdf"
+    fi
+  done
+}
+
+rename_pdf_files
+
 
